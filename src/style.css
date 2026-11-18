@@ -1,0 +1,150 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.timeline {
+  width: 100%;
+  max-width: 600px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.post {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  word-break: break-word;
+}
+
+.post-text {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.post-coords {
+  font-size: 12px;
+  color: #65676b;
+  font-family: monospace;
+}
+
+.input-form {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 16px;
+}
+
+.input-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #ccd0d5;
+  border-radius: 24px;
+  font-size: 16px;
+  outline: none;
+}
+
+.input-form input:focus {
+  border-color: #1877f2;
+}
+
+/* Модальное окно */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.modal p {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.modal input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccd0d5;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+.modal input.invalid {
+  border-color: #e41e3f;
+  background: #fff5f5;
+}
+
+.modal-error {
+  color: #e41e3f;
+  font-size: 13px;
+  min-height: 18px;
+  margin-top: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#modal-cancel {
+  background: #e4e6eb;
+  color: #050505;
+}
+
+#modal-submit {
+  background: #1877f2;
+  color: #fff;
+}
+
+#modal-submit:hover {
+  background: #166fe0;
+}

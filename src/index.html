@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline — Текстовые записи с координатами</title>
+</head>
+<body>
+  <div class="timeline" id="timeline"></div>
+
+  <form class="input-form" id="input-form">
+    <input
+      type="text"
+      id="text-input"
+      placeholder="Введите текст и нажмите Enter"
+      autocomplete="off"
+    >
+  </form>
+
+  <!-- Модальное окно для ручного ввода координат -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h2>Не удалось определить координаты</h2>
+      <p>Пожалуйста, введите координаты вручную в формате:<br>
+        <code>51.50851, −0.12572</code> или <code>[51.50851, −0.12572]</code>
+      </p>
+      <input type="text" id="coords-input" placeholder="Широта, долгота">
+      <div class="modal-error" id="modal-error"></div>
+      <div class="modal-actions">
+        <button type="button" id="modal-cancel">Отмена</button>
+        <button type="button" id="modal-submit">Добавить</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
