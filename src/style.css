@@ -33,6 +33,19 @@ body {
   word-break: break-word;
 }
 
+.post-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.post-time {
+  font-size: 12px;
+  color: #8a8d91;
+  font-variant-numeric: tabular-nums; /* ровные цифры в колонке */
+  white-space: nowrap;
+}
+
 .post-text {
   font-size: 16px;
   margin-bottom: 8px;

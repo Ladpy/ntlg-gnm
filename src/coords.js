@@ -1,5 +1,9 @@
 /**
- * Разбирает строку с координатами.
+ * Разбирает строку с координатами и валидирует их диапазоны.
+ *
+ * Широта:  [-90, 90]
+ * Долгота: [-180, 180]
+ *
  * Поддерживаемые форматы:
  *   "51.50851, −0.12572"   (пробел после запятой)
  *   "51.50851,−0.12572"    (без пробела)
@@ -7,7 +11,7 @@
  *
  * @param {string} input
  * @returns {{ latitude: number, longitude: number }}
- * @throws {Error} если формат не соответствует ожидаемому
+ * @throws {Error} если формат неверный или значение вне допустимого диапазона
  */
 export function parseCoordinates(input) {
   if (typeof input !== 'string') {
@@ -15,14 +19,9 @@ export function parseCoordinates(input) {
   }
 
   // Нормализуем математический минус (U+2212) в обычный дефис.
-  // Это позволяет не тащить «−» в регулярку отдельным токеном
-  // и не терять знак числа.
   const normalized = input.trim().replace(/−/g, '-');
 
-  // Опциональные квадратные скобки, два числа (возможно отрицательных)
-  // через запятую, с произвольными пробелами вокруг.
   const regex = /^\[?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]?$/;
-
   const match = normalized.match(regex);
 
   if (!match) {
@@ -36,6 +35,19 @@ export function parseCoordinates(input) {
 
   if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
     throw new Error('Не удалось распознать числовые значения координат');
+  }
+
+  // Проверка диапазонов — физические границы координат на Земле.
+  if (latitude < -90 || latitude > 90) {
+    throw new Error(
+      `Широта должна быть в диапазоне от -90 до 90 (получено: ${latitude})`
+    );
+  }
+
+  if (longitude < -180 || longitude > 180) {
+    throw new Error(
+      `Долгота должна быть в диапазоне от -180 до 180 (получено: ${longitude})`
+    );
   }
 
   return { latitude, longitude };

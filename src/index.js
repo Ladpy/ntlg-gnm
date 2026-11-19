@@ -11,18 +11,40 @@ const modalError = document.getElementById('modal-error');
 const modalCancel = document.getElementById('modal-cancel');
 const modalSubmit = document.getElementById('modal-submit');
 
-/** @type {{ text: string, latitude: number, longitude: number }[]} */
+/** @type {{ text: string, latitude: number, longitude: number, createdAt: Date }[]} */
 const posts = [];
 
-let pendingText = null; // текст, ожидающий координат
+let pendingText = null;
+let pendingCreatedAt = null;
+
+// ---------- Форматирование даты ----------
+function formatDateTime(date) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return (
+    `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ` +
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  );
+}
 
 // ---------- Отрисовка ----------
 function renderPosts() {
   timelineEl.innerHTML = '';
-  // Самый новый пост — сверху
+
   [...posts].reverse().forEach((post) => {
-    const postEl = document.createElement('div');
+    const postEl = document.createElement('article');
     postEl.className = 'post';
+
+    // Семантический заголовок карточки с датой/временем в правом верхнем углу.
+    const headerEl = document.createElement('header');
+    headerEl.className = 'post-header';
+
+    const timeEl = document.createElement('time');
+    timeEl.className = 'post-time';
+    timeEl.dateTime = post.createdAt.toISOString(); // ISO 8601 для семантики
+    timeEl.textContent = formatDateTime(post.createdAt);
+    timeEl.title = post.createdAt.toString();
+
+    headerEl.append(timeEl);
 
     const textEl = document.createElement('div');
     textEl.className = 'post-text';
@@ -32,13 +54,13 @@ function renderPosts() {
     coordsEl.className = 'post-coords';
     coordsEl.textContent = `${post.latitude}, ${post.longitude}`;
 
-    postEl.append(textEl, coordsEl);
+    postEl.append(headerEl, textEl, coordsEl);
     timelineEl.append(postEl);
   });
 }
 
-function addPost(text, latitude, longitude) {
-  posts.push({ text, latitude, longitude });
+function addPost(text, latitude, longitude, createdAt) {
+  posts.push({ text, latitude, longitude, createdAt });
   renderPosts();
 }
 
@@ -54,6 +76,7 @@ function openModal() {
 function closeModal() {
   modalOverlay.classList.remove('active');
   pendingText = null;
+  pendingCreatedAt = null;
 }
 
 function showModalError(message) {
@@ -76,28 +99,29 @@ function getUserCoordinates() {
           longitude: position.coords.longitude,
         });
       },
-      (error) => {
-        reject(error);
-      },
+      (error) => reject(error),
       { enableHighAccuracy: true, timeout: 10000 }
     );
   });
 }
 
-// ---------- Обработка отправки текста ----------
+// ---------- Отправка текста ----------
 formEl.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const text = textInputEl.value.trim();
   if (!text) return;
 
+  // Время фиксируем в момент создания записи пользователем.
+  const createdAt = new Date();
+
   try {
     const coords = await getUserCoordinates();
-    addPost(text, coords.latitude, coords.longitude);
+    addPost(text, coords.latitude, coords.longitude, createdAt);
     textInputEl.value = '';
   } catch (err) {
-    // Координаты недоступны — показываем модальное окно
     pendingText = text;
+    pendingCreatedAt = createdAt;
     openModal();
   }
 });
@@ -109,12 +133,14 @@ modalSubmit.addEventListener('click', () => {
   try {
     const { latitude, longitude } = parseCoordinates(raw);
     if (pendingText) {
-      addPost(pendingText, latitude, longitude);
+      addPost(pendingText, latitude, longitude, pendingCreatedAt || new Date());
       pendingText = null;
+      pendingCreatedAt = null;
       textInputEl.value = '';
     }
     closeModal();
   } catch (err) {
+    // Сюда попадут и ошибки формата, и ошибки диапазона — с понятным текстом.
     showModalError(err.message);
   }
 });
@@ -123,14 +149,12 @@ modalCancel.addEventListener('click', () => {
   closeModal();
 });
 
-// Закрытие по клику на оверлей
 modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) {
     closeModal();
   }
 });
 
-// Закрытие по Esc
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
     closeModal();

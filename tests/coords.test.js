@@ -46,4 +46,30 @@ describe('parseCoordinates', () => {
     expect(() => parseCoordinates(null)).toThrow();
     expect(() => parseCoordinates(123)).toThrow();
   });
+
+  // ---- Проверка диапазонов ----
+
+  test('широта > 90 — ошибка', () => {
+    expect(() => parseCoordinates('91, 0')).toThrow(/Широта/);
+  });
+
+  test('широта < -90 — ошибка', () => {
+    expect(() => parseCoordinates('-91, 0')).toThrow(/Широта/);
+  });
+
+  test('долгота > 180 — ошибка', () => {
+    expect(() => parseCoordinates('0, 181')).toThrow(/Долгота/);
+  });
+
+  test('долгота < -180 — ошибка', () => {
+    expect(() => parseCoordinates('0, -181')).toThrow(/Долгота/);
+  });
+
+  test('граничные значения допустимы', () => {
+    expect(parseCoordinates('90, 180')).toEqual({ latitude: 90, longitude: 180 });
+    expect(parseCoordinates('-90, -180')).toEqual({
+      latitude: -90,
+      longitude: -180,
+    });
+  });
 });
